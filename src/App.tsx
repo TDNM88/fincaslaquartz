@@ -2,8 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from './components/ui/button';
 import { Input } from './components/ui/input';
 import { Label } from './components/ui/label';
+import React from 'react';
 
-const products = {
+// Định nghĩa type cho products
+interface ProductMap {
+  [key: string]: string;
+}
+
+const products: ProductMap = {
   "C1012 Glacier White": "/product_images/C1012.jpg",
   "C1026 Polar": "/product_images/C1026.jpg",
   "C3269 Ash Grey": "/product_images/C3269.jpg",
@@ -32,101 +38,101 @@ const products = {
   "C4255 Calacatta Extra": "/product_images/C4255.jpg",
 };
 
+// Định nghĩa type cho imageDimensions
+interface ImageDimensions {
+  width: number;
+  height: number;
+}
+
 export default function ImageGenerationApp() {
   const [image, setImage] = useState<File | null>(null);
-  const [brushSize, setBrushSize] = useState(5);
-  const [drawing, setDrawing] = useState(false);
-  const [lastX, setLastX] = useState(0);
-  const [lastY, setLastY] = useState(0);
+  const [brushSize, setBrushSize] = useState<number>(5);
+  const [drawing, setDrawing] = useState<boolean>(false);
+  const [lastX, setLastX] = useState<number>(0);
+  const [lastY, setLastY] = useState<number>(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const [loading, setLoading] = useState(false);
-  const [imageDimensions, setImageDimensions] = useState({ width: 400, height: 400 });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [imageDimensions, setImageDimensions] = useState<ImageDimensions>({ width: 400, height: 400 });
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [img2imgSelectedProducts, setImg2imgSelectedProducts] = useState<string[]>([]);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedImage = event.target.files?.[0]
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const uploadedImage = event.target.files?.[0];
     if (uploadedImage) {
-      setImage(uploadedImage)
-      const img = new Image()
-      img.src = URL.createObjectURL(uploadedImage)
+      setImage(uploadedImage);
+      const img = new Image();
+      img.src = URL.createObjectURL(uploadedImage);
       img.onload = () => {
-        setImageDimensions({ width: img.width, height: img.height })
-      }
-      const reader = new FileReader()
+        setImageDimensions({ width: img.width, height: img.height });
+      };
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setUploadedImage(reader.result as string)
-        setError(null)
-      }
-      reader.readAsDataURL(uploadedImage)
+        setUploadedImage(reader.result as string);
+        setError(null);
+      };
+      reader.readAsDataURL(uploadedImage);
     }
-  }
+  };
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    setDrawing(true)
-    const rect = canvasRef.current?.getBoundingClientRect()
+  const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>): void => {
+    setDrawing(true);
+    const rect = canvasRef.current?.getBoundingClientRect();
     if (rect) {
-      setLastX(event.clientX - rect.left)
-      setLastY(event.clientY - rect.top)
+      setLastX(event.clientX - rect.left);
+      setLastY(event.clientY - rect.top);
     }
-  }
+  };
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>): void => {
     if (drawing && canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect()
-      const x = event.clientX - rect.left
-      const y = event.clientY - rect.top
-      const ctx = canvasRef.current.getContext('2d')
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const ctx = canvasRef.current.getContext('2d');
       if (ctx) {
-        ctx.strokeStyle = 'black'
-        ctx.lineWidth = brushSize
-        ctx.lineCap = 'round'
-        ctx.lineJoin = 'round'
-        ctx.beginPath()
-        ctx.moveTo(lastX, lastY)
-        ctx.lineTo(x, y)
-        ctx.stroke()
-        setLastX(x)
-        setLastY(y)
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = brushSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        setLastX(x);
+        setLastY(y);
       }
     }
-  }
+  };
 
-  const handleMouseUp = () => {
-    setDrawing(false)
-  }
+  const handleMouseUp = (): void => {
+    setDrawing(false);
+  };
 
-  const handleProductSelection = (product: string) => {
-    setImg2imgSelectedProducts((prev) => {
-      if (prev.includes(product)) {
-        return prev.filter(p => p !== product);
-      } else {
-        return [...prev, product];
-      }
-    });
-  }
+  const handleProductSelection = (product: string): void => {
+    setImg2imgSelectedProducts((prev) =>
+      prev.includes(product) ? prev.filter((p) => p !== product) : [...prev, product]
+    );
+  };
 
-  const handleBrushSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBrushSize(Number(event.target.value))
-  }
+  const handleBrushSizeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setBrushSize(Number(event.target.value));
+  };
 
-  const openModal = (imageUrl: string) => {
-    // Implement modal logic here
-    console.log('Opening modal with image:', imageUrl)
-  }
+  const openModal = (imageUrl: string): void => {
+    console.log('Opening modal with image:', imageUrl);
+  };
 
   useEffect(() => {
     if (canvasRef.current && imageDimensions.width > 0 && imageDimensions.height > 0) {
-      canvasRef.current.width = imageDimensions.width
-      canvasRef.current.height = imageDimensions.height
+      canvasRef.current.width = imageDimensions.width;
+      canvasRef.current.height = imageDimensions.height;
     }
-  }, [imageDimensions])
+  }, [imageDimensions]);
 
-  const processImg2Img = async () => {
+  const processImg2Img = async (): Promise<void> => {
     if (!uploadedImage || img2imgSelectedProducts.length === 0) {
       setError('Vui lòng tải ảnh và chọn ít nhất một sản phẩm.');
       return;
@@ -136,7 +142,7 @@ export default function ImageGenerationApp() {
     setError(null);
 
     try {
-      const imagePromises = img2imgSelectedProducts.map(async (selectedProduct) => {
+      const imagePromises = img2imgSelectedProducts.map(async () => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         return 'https://via.placeholder.com/300?text=Generated+Image';
       });
@@ -163,7 +169,12 @@ export default function ImageGenerationApp() {
       <h1 className="text-3xl font-bold text-blue-800 mb-4">Image Generation App</h1>
       <div className="mb-4">
         <Label htmlFor="image-upload" className="text-blue-800">Upload Image</Label>
-        <Input type="file" id="image-upload" onChange={handleImageUpload} className="w-full p-2 border border-blue-800 rounded" />
+        <Input
+          type="file"
+          id="image-upload"
+          onChange={handleImageUpload}
+          className="w-full p-2 border border-blue-800 rounded"
+        />
       </div>
       {image && (
         <div className="mb-4 relative">
@@ -200,13 +211,22 @@ export default function ImageGenerationApp() {
               <Button
                 key={product}
                 onClick={() => handleProductSelection(product)}
-                className={`w-full p-2 rounded shadow-md ${img2imgSelectedProducts.includes(product) ? 'bg-blue-700 text-white' : 'bg-blue-800 text-white hover:bg-blue-700'}`}
+                className={`w-full p-2 rounded shadow-md ${
+                  img2imgSelectedProducts.includes(product)
+                    ? 'bg-blue-700 text-white'
+                    : 'bg-blue-800 text-white hover:bg-blue-700'
+                }`}
               >
                 {product}
               </Button>
             ))}
           </div>
-          <Button onClick={processImg2Img} className="w-full p-2 bg-blue-800 text-white hover:bg-blue-700 rounded mt-4 shadow-md">Generate Image</Button>
+          <Button
+            onClick={processImg2Img}
+            className="w-full p-2 bg-blue-800 text-white hover:bg-blue-700 rounded mt-4 shadow-md"
+          >
+            Generate Image
+          </Button>
         </div>
       )}
       {loading ? (
@@ -216,17 +236,21 @@ export default function ImageGenerationApp() {
       ) : generatedImages.length > 0 ? (
         <div className="generated-images-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
           {generatedImages.map((imageUrl, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="generated-image-wrapper relative border-2 border-gray-300 shadow-md rounded-lg p-2"
               onClick={() => openModal(imageUrl)}
             >
-              <img src={imageUrl} alt={`Generated ${index + 1}`} className="generated-image w-full h-full object-contain rounded-lg" />
-              <a 
-                href={imageUrl} 
-                download={`generated_image_${index + 1}.png`} 
+              <img
+                src={imageUrl}
+                alt={`Generated ${index + 1}`}
+                className="generated-image w-full h-full object-contain rounded-lg"
+              />
+              <a
+                href={imageUrl}
+                download={`generated_image_${index + 1}.png`}
                 className="download-button absolute bottom-2 right-2 bg-white text-blue-800 hover:text-gray-300 px-2 py-1 rounded shadow-md"
-                onClick={e => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
               >
                 Tải ảnh {index + 1} về máy
               </a>
@@ -238,5 +262,5 @@ export default function ImageGenerationApp() {
       )}
       {error && <p className="text-red-500 mt-4">{error}</p>}
     </div>
-  )
+  );
 }
