@@ -33,18 +33,18 @@ const products = {
 };
 
 export default function ImageGenerationApp() {
-  const [image, setImage] = useState<File | null>(null)
-  const [mask, setMask] = useState<string | null>(null)
-  const [product, setProduct] = useState<string | null>(null)
-  const [generatedImages, setGeneratedImages] = useState<string[]>([])
-  const [brushSize, setBrushSize] = useState(5)
-  const [drawing, setDrawing] = useState(false)
-  const [lastX, setLastX] = useState(0)
-  const [lastY, setLastY] = useState(0)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const imageRef = useRef<HTMLImageElement>(null)
-  const [loading, setLoading] = useState(false)
-  const [imageDimensions, setImageDimensions] = useState<{ width: number, height: number }>({ width: 400, height: 400 })
+  const [image, setImage] = useState(null);
+  const [mask, setMask] = useState(null);
+  const [product, setProduct] = useState(null);
+  const [generatedImages, setGeneratedImages] = useState([]);
+  const [brushSize, setBrushSize] = useState(5);
+  const [drawing, setDrawing] = useState(false);
+  const [lastX, setLastX] = useState(0);
+  const [lastY, setLastY] = useState(0);
+  const canvasRef = useRef(null);
+  const imageRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [imageDimensions, setImageDimensions] = useState({ width: 400, height: 400 });
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedImage = event.target.files?.[0]
