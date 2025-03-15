@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { Button } from '/components/ui/button'
-import { Input } from '/components/ui/input'
-import { Label } from '/components/ui/label'
+import { Button } from 'src/components/ui/button'
+import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
 
 const products = {
   "C1012 Glacier White": `${process.env.PUBLIC_URL}/product_images/C1012.jpg`,
