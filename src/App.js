@@ -36,7 +36,7 @@ export default function ImageGenerationApp() {
   const [image, setImage] = useState(null);
   const [mask, setMask] = useState(null);
   const [product, setProduct] = useState(null);
-  const [generatedImages, setGeneratedImages] = useState([]);
+  const [generatedImages, setGeneratedImages] = useState<Array<string>>([]);
   const [brushSize, setBrushSize] = useState(5);
   const [drawing, setDrawing] = useState(false);
   const [lastX, setLastX] = useState(0);
