@@ -1,50 +1,52 @@
-import { useState, useRef, useEffect } from 'react'
-import { Button } from 'src/components/ui/button'
-import { Input } from 'src/components/ui/input'
-import { Label } from 'src/components/ui/label'
+import { useState, useRef, useEffect } from 'react';
+import { Button } from './components/ui/button';
+import { Input } from './components/ui/input';
+import { Label } from './components/ui/label';
 
 const products = {
-  "C1012 Glacier White": `${process.env.PUBLIC_URL}/product_images/C1012.jpg`,
-  "C1026 Polar": `${process.env.PUBLIC_URL}/product_images/C1026.jpg`,
-  "C3269 Ash Grey": `${process.env.PUBLIC_URL}/product_images/C3269.jpg`,
-  "C3168 Silver Wave": `${process.env.PUBLIC_URL}/product_images/C3168.jpg`,
-  "C1005 Milky White": `${process.env.PUBLIC_URL}/product_images/C1005.jpg`,
-  "C2103 Onyx Carrara": `${process.env.PUBLIC_URL}/product_images/C2103.jpg`,
-  "C2104 Massa": `${process.env.PUBLIC_URL}/product_images/C2104.jpg`,
-  "C3105 Casla Cloudy": `${process.env.PUBLIC_URL}/product_images/C3105.jpg`,
-  "C3146 Casla Nova": `${process.env.PUBLIC_URL}/product_images/C3146.jpg`,
-  "C2240 Marquin": `${process.env.PUBLIC_URL}/product_images/C2240.jpg`,
-  "C2262 Concrete (Honed)": `${process.env.PUBLIC_URL}/product_images/C2262.jpg`,
-  "C3311 Calacatta Sky": `${process.env.PUBLIC_URL}/product_images/C3311.jpg`,
-  "C3346 Massimo": `${process.env.PUBLIC_URL}/product_images/C3346.jpg`,
-  "C4143 Mario": `${process.env.PUBLIC_URL}/product_images/C4143.jpg`,
-  "C4145 Marina": `${process.env.PUBLIC_URL}/product_images/C4145.jpg`,
-  "C4202 Calacatta Gold": `${process.env.PUBLIC_URL}/product_images/C4202.jpg`,
-  "C1205 Casla Everest": `${process.env.PUBLIC_URL}/product_images/C1205.jpg`,
-  "C4211 Calacatta Supreme": `${process.env.PUBLIC_URL}/product_images/C4211.jpg`,
-  "C4204 Calacatta Classic": `${process.env.PUBLIC_URL}/product_images/C4204.jpg`,
-  "C1102 Super White": `${process.env.PUBLIC_URL}/product_images/C1102.jpg`,
-  "C4246 Casla Mystery": `${process.env.PUBLIC_URL}/product_images/C4246.jpg`,
-  "C4345 Oro": `${process.env.PUBLIC_URL}/product_images/C4345.jpg`,
-  "C4346 Luxe": `${process.env.PUBLIC_URL}/product_images/C4346.jpg`,
-  "C4342 Casla Eternal": `${process.env.PUBLIC_URL}/product_images/C4342.jpg`,
-  "C4221 Athena": `${process.env.PUBLIC_URL}/product_images/C4221.jpg`,
-  "C4255 Calacatta Extra": `${process.env.PUBLIC_URL}/product_images/C4255.jpg`,
+  "C1012 Glacier White": "/product_images/C1012.jpg",
+  "C1026 Polar": "/product_images/C1026.jpg",
+  "C3269 Ash Grey": "/product_images/C3269.jpg",
+  "C3168 Silver Wave": "/product_images/C3168.jpg",
+  "C1005 Milky White": "/product_images/C1005.jpg",
+  "C2103 Onyx Carrara": "/product_images/C2103.jpg",
+  "C2104 Massa": "/product_images/C2104.jpg",
+  "C3105 Casla Cloudy": "/product_images/C3105.jpg",
+  "C3146 Casla Nova": "/product_images/C3146.jpg",
+  "C2240 Marquin": "/product_images/C2240.jpg",
+  "C2262 Concrete (Honed)": "/product_images/C2262.jpg",
+  "C3311 Calacatta Sky": "/product_images/C3311.jpg",
+  "C3346 Massimo": "/product_images/C3346.jpg",
+  "C4143 Mario": "/product_images/C4143.jpg",
+  "C4145 Marina": "/product_images/C4145.jpg",
+  "C4202 Calacatta Gold": "/product_images/C4202.jpg",
+  "C1205 Casla Everest": "/product_images/C1205.jpg",
+  "C4211 Calacatta Supreme": "/product_images/C4211.jpg",
+  "C4204 Calacatta Classic": "/product_images/C4204.jpg",
+  "C1102 Super White": "/product_images/C1102.jpg",
+  "C4246 Casla Mystery": "/product_images/C4246.jpg",
+  "C4345 Oro": "/product_images/C4345.jpg",
+  "C4346 Luxe": "/product_images/C4346.jpg",
+  "C4342 Casla Eternal": "/product_images/C4342.jpg",
+  "C4221 Athena": "/product_images/C4221.jpg",
+  "C4255 Calacatta Extra": "/product_images/C4255.jpg",
 };
 
 export default function ImageGenerationApp() {
-  const [image, setImage] = useState(null);
-  const [mask, setMask] = useState(null);
-  const [product, setProduct] = useState(null);
-  const [generatedImages, setGeneratedImages] = useState<Array<string>>([]);
+  const [image, setImage] = useState<File | null>(null);
   const [brushSize, setBrushSize] = useState(5);
   const [drawing, setDrawing] = useState(false);
   const [lastX, setLastX] = useState(0);
   const [lastY, setLastY] = useState(0);
-  const canvasRef = useRef(null);
-  const imageRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const [loading, setLoading] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 400, height: 400 });
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [img2imgSelectedProducts, setImg2imgSelectedProducts] = useState<string[]>([]);
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedImage = event.target.files?.[0]
@@ -55,6 +57,12 @@ export default function ImageGenerationApp() {
       img.onload = () => {
         setImageDimensions({ width: img.width, height: img.height })
       }
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setUploadedImage(reader.result as string)
+        setError(null)
+      }
+      reader.readAsDataURL(uploadedImage)
     }
   }
 
@@ -93,17 +101,13 @@ export default function ImageGenerationApp() {
   }
 
   const handleProductSelection = (product: string) => {
-    setProduct(product)
-  }
-
-  const handleImageGeneration = () => {
-    setLoading(true)
-    // Simulate image generation
-    setTimeout(() => {
-      const generatedImage = 'https://via.placeholder.com/300?text=Generated+Image'
-      setGeneratedImages([...generatedImages, generatedImage])
-      setLoading(false)
-    }, 2000)
+    setImg2imgSelectedProducts((prev) => {
+      if (prev.includes(product)) {
+        return prev.filter(p => p !== product);
+      } else {
+        return [...prev, product];
+      }
+    });
   }
 
   const handleBrushSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,6 +125,30 @@ export default function ImageGenerationApp() {
       canvasRef.current.height = imageDimensions.height
     }
   }, [imageDimensions])
+
+  const processImg2Img = async () => {
+    if (!uploadedImage || img2imgSelectedProducts.length === 0) {
+      setError('Vui lòng tải ảnh và chọn ít nhất một sản phẩm.');
+      return;
+    }
+    setGeneratedImages([]);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const imagePromises = img2imgSelectedProducts.map(async (selectedProduct) => {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        return 'https://via.placeholder.com/300?text=Generated+Image';
+      });
+      const imageUrls = await Promise.all(imagePromises);
+      setGeneratedImages(imageUrls);
+    } catch (err: unknown) {
+      setError(`Có lỗi xảy ra khi tạo ảnh: ${(err as Error).message}`);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-4 font-sans">
@@ -169,12 +197,16 @@ export default function ImageGenerationApp() {
           </div>
           <div className="product-selection-container mb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {Object.keys(products).map((product) => (
-              <Button key={product} onClick={() => handleProductSelection(product)} className="w-full p-2 bg-blue-800 text-white hover:bg-blue-700 rounded shadow-md">
+              <Button
+                key={product}
+                onClick={() => handleProductSelection(product)}
+                className={`w-full p-2 rounded shadow-md ${img2imgSelectedProducts.includes(product) ? 'bg-blue-700 text-white' : 'bg-blue-800 text-white hover:bg-blue-700'}`}
+              >
                 {product}
               </Button>
             ))}
           </div>
-          <Button onClick={handleImageGeneration} className="w-full p-2 bg-blue-800 text-white hover:bg-blue-700 rounded mt-4 shadow-md">Generate Image</Button>
+          <Button onClick={processImg2Img} className="w-full p-2 bg-blue-800 text-white hover:bg-blue-700 rounded mt-4 shadow-md">Generate Image</Button>
         </div>
       )}
       {loading ? (
@@ -204,6 +236,7 @@ export default function ImageGenerationApp() {
       ) : (
         <div className="output-placeholder text-blue-800">Ảnh kết quả sẽ hiển thị ở đây</div>
       )}
+      {error && <p className="text-red-500 mt-4">{error}</p>}
     </div>
   )
 }
